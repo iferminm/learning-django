@@ -22,6 +22,12 @@ class Course(models.Model):
     def __unicode__(self):
         return self.name
 
+class CourseCategory(models.Model):
+    name = models.CharField(max_length=64)
+    courses = models.ManyToManyField(Course)
+
+    def __unicode__(self):
+        return self.name
 
 class Professor(models.Model):
     picture = models.ImageField(upload_to=os.path.join(settings.MEDIA_ROOT, 'professor_pictures'), blank=True, null=True)
@@ -32,18 +38,10 @@ class Professor(models.Model):
     degree = models.ForeignKey(ProfessorDegree)
     date_begin = models.DateField()
     date_retired = models.DateField(blank=True, null=True)
-    taught = models.ManyToManyField(Course)
+    teaches = models.ManyToManyField(Course)
 
     def __unicode__(self):
         return u'%s %s' % (self.first_name, self.last_names)
-
-class GuideTheme(models.Model):
-    title = models.CharField(max_length=128)
-    content = models.TextField()
-    guide = models.ForeignKey(CourseGuide)
-
-    def __unicode__(self):
-        return self.name
 
 
 class CourseGuide(models.Model):
@@ -57,11 +55,20 @@ class CourseGuide(models.Model):
         return self.name
 
 
+class GuideTheme(models.Model):
+    title = models.CharField(max_length=128)
+    content = models.TextField()
+    guide = models.ForeignKey(CourseGuide)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Student(models.Model):
     picture = models.ImageField(upload_to=os.path.join(settings.MEDIA_ROOT, 'professor_pictures'), blank=True, null=True)
     first_name = models.CharField(max_length=32)
     last_names = models.CharField(max_length=64)
-    email = models.CharField()
+    email = models.CharField(max_length=64)
     gender = models.CharField(max_length=2, choices=settings.GENDER_CHOICES)
     enroled = models.ManyToManyField(Course)
 
@@ -73,9 +80,4 @@ class Session(models.Model):
     begin = models.DateTimeField()
     end = models.DateTimeField()
     course = models.ForeignKey(Course)
-    teacher = models.ForeignKey(Professor)
-    students = models.ManyToManyField(Student)
-
-    def __unicode__(self):
-        return u'%s with Prof. %s %s' % (course.name, teacher.first_name, teacher.last_names)
-
+    themes = models.ManyToManyField(GuideTheme)
