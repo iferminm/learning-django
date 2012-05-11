@@ -153,3 +153,8 @@ GENDER_CHOICES = (
     (u'M', u'Male'),
     (u'F', u'Female'),
 )
+
+DEFAULT_FROM_EMAIL = ''
+DEFAULT_FROM_EMAIL_PASS = ''
+DEFAULT_EMAIL_HOST = 'smtp.gmail.com'
+DEFAULT_EMAIL_PORT = 587
