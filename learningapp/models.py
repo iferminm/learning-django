@@ -121,7 +121,6 @@ def session_ended(sender, instance, created, *args, **kwargs):
     if not created and instance.ended and not instance.mail_sent:
         students = instance.course.student_set.all()
         content = ", ".join(t.title for t in instance.themes.all())
-        print content
         mailer = Mailer()
         for s in students:
             name = "%s %s" % (s.first_name, s.last_names)
@@ -141,3 +140,23 @@ Se le recomienda ampliamente revisar el contenido.
         instance.save()
 
 post_save.connect(session_ended, sender=Session)
+
+def guide_updated(sender, instance, created, *args, **kwargs):
+    if not created:
+        course = instance.guide.course
+        course_name = course.name
+        guide_name = instance.guide.name
+        theme = instance.title
+        students = course.student_set.all()
+        mailer = Mailer()
+
+        for s in students:
+            name = "%s %s" % (s.first_name, s.last_names)
+            text = u"""
+Estimado %s
+
+Le informamos que el contenido del tema %s de la guia %s del curso %s, ha sido actualizado.
+""" % (name, theme, guide_name, course_name)
+            mail = s.email
+            mailer.send_mail(name, mail, u'Contenido Actualizado', text)
+post_save.connect(guide_updated, sender=GuideTheme)
