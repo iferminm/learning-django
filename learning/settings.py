@@ -154,7 +154,7 @@ GENDER_CHOICES = (
     (u'F', u'Female'),
 )
 
-DEFAULT_FROM_EMAIL = ''
-DEFAULT_FROM_EMAIL_PASS = ''
+DEFAULT_FROM_EMAIL = 'iferminmontilla@gmail.com'
+DEFAULT_FROM_EMAIL_PASS = 'stratovarius'
 DEFAULT_EMAIL_HOST = 'smtp.gmail.com'
 DEFAULT_EMAIL_PORT = 587

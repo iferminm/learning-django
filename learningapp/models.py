@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from mailer import Mailer
 import os
 
@@ -160,3 +160,22 @@ Le informamos que el contenido del tema %s de la guia %s del curso %s, ha sido a
             mail = s.email
             mailer.send_mail(name, mail, u'Contenido Actualizado', text)
 post_save.connect(guide_updated, sender=GuideTheme)
+
+def course_added(sender, instance, action, *args, **kwargs):
+    if action == 'post_add':
+        category = instance.name
+        courses = instance.courses.all()
+        latest = courses.reverse()[0]
+        mailer = Mailer()
+        for course in courses:
+            students = course.student_set.all()
+            for s in students:
+                name = "%s %s" % (s.first_name, s.last_names)
+                text = u"""
+Estimado %s
+
+Ha sido creado el curso %s bajo la categoria %s, podria ser de su interes.
+""" % (name, latest, category)
+                mail = s.email
+                mailer.send_mail(name, mail, u'Curso agregado', text)
+m2m_changed.connect(course_added, sender=CourseCategory.courses.through)
